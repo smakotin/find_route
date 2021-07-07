@@ -12,7 +12,7 @@ from trains.models import Train
 
 __all__ = (
     'home', 'TrainListView',
-    # 'TrainDetailView',
+    'TrainDetailView',
     # 'TrainCreateView',
     # 'TrainUpdateView',
     # 'TrainDeleteView',
@@ -22,24 +22,25 @@ __all__ = (
 
 def home(request, pk=None):
     qs = Train.objects.all()
-    lst = Paginator(qs, 2)
+    lst = Paginator(qs, 5)
     page_number = request.GET.get('page')
     page_obj = lst.get_page(page_number)
     context = {'page_obj': page_obj,}
-    return render(request, 'cities/home.html', context)
+    return render(request, 'trains/home.html', context)
+
 
 class TrainListView(ListView):
     paginate_by = 5
     model = Train
-    template_name = 'cities/home.html'
+    template_name = 'trains/home.html'
 
 
 
-# class TrainDetailView(DetailView):
-#     queryset = Train.objects.all()
-#     template_name = 'cities/detail.html'
-#
-#
+class TrainDetailView(DetailView):
+    queryset = Train.objects.all()
+    template_name = 'trains/detail.html'
+
+
 # class TrainCreateView(SuccessMessageMixin, CreateView):
 #     model = Train
 #     form_class = TrainForm
