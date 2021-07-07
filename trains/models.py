@@ -1,5 +1,5 @@
+from django.core.exceptions import ValidationError
 from django.db import models
-
 
 
 class Train(models.Model):
@@ -21,3 +21,17 @@ class Train(models.Model):
         verbose_name = 'Поезд'
         verbose_name_plural = 'Поезда'
         ordering = ['travel_time']
+
+    def clean(self):
+        if self.from_city == self.to_city:
+            raise ValidationError('Город отправления и прибытия совпадает')
+        qs = Train.objects.filter(from_city=self.from_city,
+                                  to_city=self.to_city, travel_time=self.travel_time).exclude(pk=self.pk)
+        if qs.exists():
+            raise ValidationError('Уже есть поезд по этому маршруту с таким же временем в пути.'
+                                  'Необходимо изменить время в пути')
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super(Train, self).save(*args, **kwargs)
+
