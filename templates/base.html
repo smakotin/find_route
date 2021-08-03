@@ -2,6 +2,7 @@
 {% url 'cities:create' as cities_create_url %}
 {% url 'trains:home' as trains_home_url %}
 {% url 'trains:create' as trains_create_url %}
+{% url 'list' as route_list %}
 
 <!doctype html>
 <html lang="en">
@@ -31,10 +32,15 @@
              aria-current="page" href="{% url 'cities:home' %}">Города</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'trains:home' %}">Поезда</a>
+          <a class="nav-link
+          {% if request.path == trains_home_url%}
+           active
+          {% endif %}" href="{% url 'trains:home' %}">Поезда</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'list' %}">Маршруты</a>
+          <a class="nav-link {% if request.path == route_list or request.path == route_detail%}
+           active
+           {% endif %}" href="{% url 'list' %}">Маршруты</a>
         </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle
