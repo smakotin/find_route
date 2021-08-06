@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404
@@ -19,6 +20,7 @@ __all__ = (
     'CityListView',
 )
 
+
 def home(request, pk=None):
     if request.method == 'POST':
         form = CityForm(request.POST)
@@ -26,9 +28,9 @@ def home(request, pk=None):
             print(form.cleaned_data)
             form.save()
     # if pk:
-        # city = get_object_or_404(City, id=pk)
-        # context =  {'object': city}
-        # return render(request, 'cities/detail.html', context)
+    # city = get_object_or_404(City, id=pk)
+    # context =  {'object': city}
+    # return render(request, 'cities/detail.html', context)
 
     form = CityForm()
     qs = City.objects.all()
@@ -38,11 +40,13 @@ def home(request, pk=None):
     context = {'page_obj': page_obj, 'form': form}
     return render(request, 'cities/home.html', context)
 
+
 class CityDetailView(DetailView):
     queryset = City.objects.all()
     template_name = 'cities/detail.html'
 
-class CityCreateView(SuccessMessageMixin, CreateView):
+
+class CityCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):
     model = City
     form_class = CityForm
     template_name = 'cities/create.html'
@@ -50,7 +54,7 @@ class CityCreateView(SuccessMessageMixin, CreateView):
     success_message = "Город успешно создан"
 
 
-class CityUpdateView(SuccessMessageMixin, UpdateView):
+class CityUpdateView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     model = City
     form_class = CityForm
     template_name = 'cities/update.html'
@@ -58,7 +62,7 @@ class CityUpdateView(SuccessMessageMixin, UpdateView):
     success_message = "Город успешно отредактирован"
 
 
-class CityDeleteView(DeleteView):
+class CityDeleteView(LoginRequiredMixin, DeleteView):
     model = City
     # template_name = 'cities/delete.html'
     success_url = reverse_lazy('cities:home')
@@ -66,6 +70,7 @@ class CityDeleteView(DeleteView):
     def get(self, request, *args, **kwargs):
         messages.success(request, 'Город успешно удален')
         return self.post(request, *args, **kwargs)
+
 
 class CityListView(ListView):
     paginate_by = 5
@@ -77,4 +82,3 @@ class CityListView(ListView):
         form = CityForm()
         context['form'] = form
         return context
-        
